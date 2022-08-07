@@ -1,0 +1,14 @@
+{
+  "baseUrl": "..",
+  "optimize": "none",
+  "paths": {
+    "nbd":"."
+  },
+  "name": "build/all",
+  "include": ["node_modules/almond/almond"],
+  "wrap": {
+    "start": "(function(root) {",
+    "end": "root.nbd = require('build/all'); })(this);"
+  },
+  "out": "nbd.js"
+}
