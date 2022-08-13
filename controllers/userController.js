@@ -1,5 +1,7 @@
 const User = require('../models/userModel');
 const AppError = require('../utils/AppError');
+const factory = require('./handleFactory');
+
 const sendErrorResponse = (res, error, statusCode) => {
   return   res.status(statusCode).json({
         status: 'fail',
@@ -18,25 +20,8 @@ const filterUnwanted = (obj, ...wanted) =>{
     )
   return newObject;
 }
-exports.getAllUsers = async (req, res) => {
+exports.getAllUsers = factory.getAll(User);
 
-    try {
-        const users = await User.find();
-        res.status(200).json({
-            status: 'súccess',
-            results: users.length,
-            data: users
-        })
-        
-    } catch (error) {
-        res.status(404).json({
-            status: 'fail',
-            error,
-            stack: error.stack
-        })
-    }
-    
-   }
 exports.updateMe = async (req, res, next)   =>{
     try {
         // 1 Give error if user trying to update password 
@@ -85,24 +70,12 @@ exports.createNewUser = (req, res) => {
         message: 'this router has not been built'
     })
    }
-exports.getUserbyID = (req, res) => {
+exports.getMe = async (req, res , next)   => {
+    req.params.id = req.user.id;
+    next();
+}
 
-    res.status(500)
-    .json({
-        message: 'this router has not been built'
-    })
-   }
-exports.updateUser = (req, res) => {
-
-    res.status(500)
-    .json({
-        message: 'this router has not been built'
-    })
-   }
-exports.deleteUser = (req, res) => {
-
-    res.status(500)
-    .json({
-        message: 'this router has not been built'
-    })
-   }
+//  Dont update password here
+exports.updateUser = factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User);
+exports.getUserbyID = factory.getOne(User);

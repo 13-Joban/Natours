@@ -7,74 +7,44 @@
 /* eslint-disable-next-line lines-between-class-members */
 
 const Tour = require('../models/tourModel')
-const APIFeatures = require('../utils/ApiFeatures');
+// const APIFeatures = require('../utils/ApiFeatures');
 const AppError = require('../utils/AppError');
-// const alltours = JSON.parse(
-//     fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
-//     )
+const factory = require('./handleFactory');
 
-// exports.checkBody = (req, resp, next) => {
-//     if(!req.body.name || !req.body.price){
-//         resp.status(400)
-//         .json({
-//             status: 'fail', 
-//             message: 'Cant add new tour without price and name'
-//         })
-//     }
-//     next()
-// }    
-exports.aliase =  (req, resp, next) => {
+
+exports.aliase =  (req, res, next) => {
     req.query.limit = '5';
     req.query.sort = '-ratingsAverage,price';
     req.query.fields = 'name,price,difficulty,ratingsAverage,summary';
     next();
 }
-
-
-
-
-exports.getAllTours = async ( req, resp, next) => {
-
-       
-    try {
-        const features = new APIFeatures(Tour.find(), req.query )
-        .filter()
-        .sort()
-        .limiting()
-        .paginate();
-        // execute query object
-        const tours =  await features.query;
-        
-       
-
-        // Send response
-
-  resp.status(200).json({
-            status: 'success',
-            results: tours.length,
-            data: {
-                tours
-            }
-        })
-    } catch (error) {
-        resp.status(404).json({
-            status: 'fail',
-       error,
-       stack: error.stack
-        })
-    }
-    
-    }
-exports.addNewTour   = async (req, resp, next) => {
+exports.getAllTours = factory.getAll(Tour)
+exports.addNewTour   = async (req, res, next) => {
     try {
          // const newTour = new Tour({})
     // newTour.save()
 
-    const newTour =   await  Tour.create(req.body, {
-        new: true
+    const newTour = await  Tour.create({
+        name: req.body.name,
+        duration: req.body.duration,
+        maxGroupSize: req.body.maxGroupSize,
+        difficulty: req.body.difficulty,
+        price: req.body.price,
+        summary: req.body.summary,
+        description: req.body.description,
+        imageCover: req.body.imageCover,
+        images: req.body.images,
+        guides: req.body.guides,
+        ratingsAverage: req.body.ratingsAverage,
+        ratingsQuantity: req.body.ratingsQuantity,
+        price: req.body.price,
+        priceDiscount: req.body.priceDiscount,
+        secretTour: req.body.secretTour,
+        startDates: req.body.startDates
+        
     })
-    console.log(newTour)
-    resp.status(201).json({
+    
+    res.status(201).json({
         status: 'success',
         data: {
            tour:  newTour
@@ -83,7 +53,7 @@ exports.addNewTour   = async (req, resp, next) => {
         
     } catch (error) {
         
-        resp.status(404).json({
+        res.status(404).json({
             status: 'fail',
             error,
             stack: error.stack
@@ -93,176 +63,11 @@ exports.addNewTour   = async (req, resp, next) => {
    
 
     }
-exports.getTourbyID = async (req, resp, next) => {
-        // const desiredid = req.params.id;
-    
-        // // desired id is a string change it into number
-        // const desiredidnum =  desiredid*1;
-    
-        // const desiredtour  = alltours.find(ele => ele.id === desiredidnum)
-        // //console.log(desiredidnum)
-        // // console.log(desiredtour)
-    
-        // if(!desiredtour){
-        //   return   resp
-        //     .status(404)
-        //     .json({
-        //         name: 'fail',
-        //         message: 'Invalid ID'
-        //     })
-        // }
-    
-        // resp
-        // .status(200)
-        // .json({
-        //     name: 'success',
-        //     data:{
-        //         tour: desiredtour
-        //     }
-        // })
-    
-        try{
-            const tour = await Tour.findOne({ _id: req.params.id}) 
-        // findbYiD = find({_id: req.params.id})
-        if(!tour){
-            return  next(new AppError('No tour founded with the given id' , 404));
-           }
-
-        resp.status(200).json({
-            status: 'success',
-            data: {
-                tour
-            } 
-        })
-        }
-        catch(error){
-            resp.status(404).json({
-                status: 'fail',
-                error,
-                stack: error.stack
-            })
-        }
-        
-
-    }
-exports.updateTour  =  async (req, resp, next) => {
-        // const desiredid = req.params.id;
-    
-        // // desired id is a string change it into number
-        // const desiredidnum =  desiredid*1;
-    
-        // const   desiredtour  = alltours.find(ele => ele.id === desiredidnum)
-        // //console.log(desiredidnum)
-        // // console.log(desiredtour)
-    
-        // if(!desiredtour){
-        //     return   resp
-        //     .status(404)
-        //     .json({
-        //         name: 'fail',
-        //         message: 'Invalid ID'
-        //     })
-        
-//    const updatedtour = {...desiredtour, ...req.body}
-    
-//         const updatedtoursarr = alltours.map(t => 
-//            t.id === updatedtour.id ? updatedtour : t
-//                 )
-    
-//         fs.writeFile(`${__dirname}/../dev-data/data/tours-simple.json`, JSON.stringify(updatedtoursarr), err => {
-    
-//             resp
-//             .status(200)
-//             .json({
-//                 name: 'success',
-//                 data: {
-//                     tour: updatedtour
-//                 }
-//             })
-//         })
-
-   try {
-    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true
-    }
-    )
-
-    resp.status(200).json({
-        status: 'success',
-        data: {
-            tour
-        }
-    })
-}
-catch(error){
-    resp.status(404).json({
-        status: 'fail',
-       error,
-       stack: error.stack
-    })
-}
-
-       
-    
-    }
-exports.deleteTour =  async (req, resp, next) =>{
-    
-    //    const desiredid = req.params.id;
-   
-    //    // desired id is a string change it into number
-    //    const desiredidnum =  desiredid*1;
-   
-    //    const   desiredtour  = alltours.find(ele => ele.id === desiredidnum)
-       //console.log(desiredidnum)
-       // console.log(desiredtour)
-   
-    //    if(!desiredtour){
-    //     return   resp
-    //        .status(404)
-    //        .json({
-    //            name: 'fail',
-    //            message: 'Invalid ID'
-    //        })
-    //    }
-       
-    //    const updatedtoursarr = alltours.filter( tour => tour.id !== desiredtour.id)
-   
-    //     fs.writeFile(`${__dirname}/../dev-data/data/tours-simple.json`, JSON.stringify(updatedtoursarr), err => {
-   
-    //        resp
-    //        .status(204)
-    //        .json({
-    //            name: 'success',
-    //            data:null
-    //        })
-    //    })
-
-    try{
-      const tour =   await Tour.findByIdAndDelete(req.params.id)
-
-      if(!tour){
-       return  next(new AppError('No tour deleted with the given id', 404) );
-      }
-
-    resp.status(204).json({
-        status: 'success',
-        data: null
-    })
-    }
-    catch(error){
-
-        resp.status(404).json({
-            status: 'fail',
-            error,
-            stack: error.stack
-        })
-    }
-    
-
-}
-   
-exports.getTourStats = async (req, res) =>{
+exports.getTourbyID = factory.getOne(Tour, {path: 'reviews'})
+ 
+exports.updateTour  = factory.updateOne(Tour);
+exports.deleteTour = factory.deleteOne(Tour);
+exports.getTourStats = async (req, res) => {
 
     try {
         const stats = await  Tour.aggregate([

@@ -37,9 +37,10 @@ exports.signup = async (req, res) => {
             name: req.body.name,
             email: req.body.email,
             password: req.body.password,
-            confirmPassword: req.body.confirmPassword,
+            passwordConfirm: req.body.passwordConfirm,
             changedPasswordAt: req.body.changedPasswordAt,
-            role: req.body.role
+            role: req.body.role,
+            photo: req.body.photo
         });
 
         createSendToken(newUser, 201, res);
@@ -63,9 +64,8 @@ exports.login = async(req, res, next) => {
 
         const userindb = await User.findOne({email}).select('+password');
         
-        if( !userindb || ! await userindb.verifyPassword(password, userindb.password)){
-
-            return next(new AppError('Incorrect email or password', 401));
+        if(!userindb || ! await userindb.verifyPassword(password, userindb.password)){
+            return next(new AppError('Email or password is incorrect', 401) );
         }
         
        
@@ -114,6 +114,7 @@ exports.protect = async(req, res,next) => {
 
 
     // GRANT ACCESS TO PROTECTED ROUTE
+    
     req.user = currentUser
    
 
@@ -246,3 +247,4 @@ exports.updatePassword = async (req, res, next) => {
        return next(new AppError('Error in updating password ', 500));
     }
 }
+

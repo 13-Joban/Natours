@@ -70,8 +70,8 @@ module.exports = (err, req, res, next) => {
     if(error.name === 'JsonWebTokenError') error = handleJwtError(error);
     if(error.name === 'TokenExpiredError') error = handleTokenExpireError(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
-    if (error._message === 'Tour validation failed')
-      error = handleValidationErrorDB(error);
+    // if (error._message === 'Tour validation failed')
+    //   error = handleValidationErrorDB(error);
 
       console.log('prod')
     sendErrorProd(error, res);
