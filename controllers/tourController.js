@@ -163,5 +163,82 @@ exports.getMonthlyPlan = async(req , res) => {
     
 
 }
+exports.getWithinTour = async (req, res, next) => {
+    try {
+        // /tours-within/:distance/center/:latlan/unit/:unit
+    // /tours-within/250/center/457 40/unit/mi
+    // console.log(req.params)
+    const {distance, latlan , unit} = req.params;
+    // console.log(distance, latlan, unit);
+    const [lat , lan] = latlan.split(',');
+    // console.log(lat, lan);
+    const radius = unit === 'mi' ? distance / 3963.0 : distance / 6378.1
+    if(!lat || !lan){
+         next(new AppError('Please provide latitude and longitude', 400))
+    }
+    
+    
+    const tours = await Tour.find({
+        startLocation:  {   $geoWithin: {$centerSphere : [[lan, lat], radius]}}
+    })
+    
+    res.status(200).json({ 
+        status: 'success',
+        data: {
+            tours
+        }
+    })
+        } catch (error) {
+        res.status(404).json({
+            status: 'fail',
+            error,
+            stack: error.stack
+        })
+    }
+}     
+exports.getDistances =  async(req, res , next) => {
+    try {
+        const {latlan ,unit} = req.params;
+        const [lat, lan]= latlan.split(',');
+        const multiplier = unit === 'mi' ? 0.0006 : 0.001
+        if(!lat || !lan){
+            next(new AppError('Please provide latitude and longitude', 400))
+       }
+
+       const distances = await  Tour.aggregate([
+        {
+            $geoNear:  {
+                near: 
+               { 
+                type: 'Point',
+                coordinates: [lan*1, lat*1]
+               },
+               distanceField: 'distance',
+               distanceMultiplier: multiplier
+            }
+        },
+            {   $project: {
+                name: 1, 
+                distance: 1
+            }
+        }
         
+       ])
+    
+       res.status(200).json({ 
+        status: 'success',
+        data: {
+            distances
+        }
+    })
+        
+    } catch (error) {
+        res.status(404).json({
+            status: 'fail',
+            error,
+            stack: error.stack
+        })
+    }
+
+}
 

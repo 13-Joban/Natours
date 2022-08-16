@@ -12,6 +12,8 @@ const helmet = require('helmet');
 const mongo_sanitization = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const bodyParser = require('body-parser');
+
 // console.log(app.get('env'));
 
 // console.log(process.env.USER);
@@ -23,6 +25,8 @@ app.use(helmet());
 
 // body parser
 app.use(express.json());
+// parse application/json
+app.use(bodyParser.json())
 // middleware for accessing static files
 app.use(express.static(`${__dirname}/public`));
 

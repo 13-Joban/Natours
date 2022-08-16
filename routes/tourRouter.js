@@ -39,9 +39,14 @@ router
 .delete( authController.protect, authController.restrictTo('admin','lead-guide'),  tourController.deleteTour)
 
 
-// router
-// .route('/:tourId/reviews')
-// .post(authController.protect,  reviewController.createReview)
-// .get(authController.protect, reviewController.getAllReviews)
+// route for geoSpatial tours
+// /tours-within/:distance/center/:latlan/unit/:unit
+// /tours-within/250/center/457 40/unit/mi
+router.route('/tours-within/:distance/center/:latlan/unit/:unit')
+.get( tourController.getWithinTour)
+
+// get distances of near by tours
+router.route('/distances/:latlan/unit/:unit')
+.get( tourController.getDistances)
 
 module.exports = router;

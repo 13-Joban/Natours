@@ -14,7 +14,8 @@ const reviewSchema = new mongoose.Schema({
         required: true,
         min: [1.0, 'Minimum rating must be 1.0'],
         max: [5.0, 'Maximum rating must be 5.0'],
-        default: 4.5
+        default: 4.5,
+        set: val => Math.round(val * 10)/10
     },
     createdAt: {
         type: Date,
@@ -83,6 +84,10 @@ reviewSchema.statics.calcAverageRatings = async function(tourId){
       }
 }
 
+// one user one review for single tour
+reviewSchema.index({tour: 1, user: 1}, {unique: true});
+
+// after saving doc calculate avgRating
 reviewSchema.post('save', function() {
     this.constructor.calcAverageRatings(this.tour);
 

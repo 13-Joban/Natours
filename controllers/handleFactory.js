@@ -106,7 +106,7 @@ exports.getAll = (Model) => async (req, res, next) => {
         // const docs =  await features.query.explain();
         const docs =  await features.query;
         // Send resonse
-        console.log(docs);
+       
   res.status(200).json({
             status: 'success',
             results: docs.length,

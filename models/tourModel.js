@@ -79,6 +79,30 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
+    startLocation: {
+      // GeoJSON
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point']
+      },
+      coordinates: [Number],
+      address: String,
+      description: String
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point']
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number
+      }
+    ],
     guides: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -148,7 +172,8 @@ tourSchema.virtual(('reviews'), {
 } )
 // indexes of mongodb 
 tourSchema.index({price: 1, ratingsAverage: -1});
-tourSchema.index({slug: 1})
+tourSchema.index({slug: 1});
+tourSchema.index({startLocation: '2dsphere'})
 tourSchema.post(/^find/, function(docs, next) {
   console.log(`Query took ${Date.now() - this.start} milliseconds!`);
   next();
@@ -158,9 +183,12 @@ tourSchema.post(/^find/, function(docs, next) {
 
 // AGGREGATION MIDDLEWARE
 tourSchema.pre('aggregate', function(next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-
-  console.log(this.pipeline());
+  const things = this.pipeline()[0];
+  if (Object.keys(things)[0] !== '$geoNear') {
+    this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  }
+  next();
+  // console.log(this.pipeline());
   next();
 });
 
