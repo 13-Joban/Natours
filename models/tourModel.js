@@ -120,11 +120,16 @@ tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });
 
+// indexes of mongodb 
+tourSchema.index({price: 1, ratingsAverage: -1});
+tourSchema.index({slug: 1});
+tourSchema.index({startLocation: '2dsphere'})
+
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
-// tourSchema.pre('save', function(next) {
-//   this.slug = slugify(this.name, { lower: true });
-//   next();
-// });
+tourSchema.pre('save', function(next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
 
 // EMBEDDING GUIDES FROM USER  INTO TOURS 
 // tourSchema.pre('save' , async function(next){
@@ -170,10 +175,7 @@ tourSchema.virtual(('reviews'), {
   foreignField: 'tour',
   localField: '_id'
 } )
-// indexes of mongodb 
-tourSchema.index({price: 1, ratingsAverage: -1});
-tourSchema.index({slug: 1});
-tourSchema.index({startLocation: '2dsphere'})
+
 tourSchema.post(/^find/, function(docs, next) {
   console.log(`Query took ${Date.now() - this.start} milliseconds!`);
   next();
@@ -189,7 +191,7 @@ tourSchema.pre('aggregate', function(next) {
   }
   next();
   // console.log(this.pipeline());
-  next();
+  
 });
 
 const Tour = mongoose.model('Tour', tourSchema);

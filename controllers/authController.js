@@ -37,7 +37,7 @@ exports.signup = async (req, res) => {
             name: req.body.name,
             email: req.body.email,
             password: req.body.password,
-            passwordConfirm: req.body.passwordConfirm,
+            confirmPassword: req.body.confirmPassword,
             changedPasswordAt: req.body.changedPasswordAt,
             role: req.body.role,
             photo: req.body.photo
@@ -63,7 +63,7 @@ exports.login = async(req, res, next) => {
         // 2 check if user exists in database
 
         const userindb = await User.findOne({email}).select('+password');
-        
+        console.log(userindb);
         if(!userindb || ! await userindb.verifyPassword(password, userindb.password)){
             return next(new AppError('Email or password is incorrect', 401) );
         }
@@ -81,6 +81,12 @@ exports.login = async(req, res, next) => {
         })
     }
 }
+exports.logout = async (req, res) => {
+    res.clearCookie('jwt');
+    res.status(200).json({
+        status: 'success'
+    })
+}
 
 exports.protect = async(req, res,next) => {
 
@@ -88,8 +94,12 @@ exports.protect = async(req, res,next) => {
          // 1  check if token exists or passed in headers
          
     let token;
-    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
-        token = req.headers.authorization.split(' ')[1];
+    // if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
+    //     token = req.headers.authorization.split(' ')[1];
+    // }
+     if(req.cookies.jwt){
+
+        token = req.cookies.jwt
     }
 
     if(!token){
@@ -97,10 +107,9 @@ exports.protect = async(req, res,next) => {
     }
 
     // 2 Verification token
-
-  const decoded =   await promisify(jwt.verify)(token, process.env.JWT_SECRET_KEY);
+    const decoded =   await promisify(jwt.verify)(token, process.env.JWT_SECRET_KEY);
         // 3 If user exists
-  let   currentUser = await User.findById(decoded.id);
+    let  currentUser = await User.findById(decoded.id);
 
     if(!currentUser){
        return next(new AppError('User with the given token does not exist ', 401));
@@ -116,8 +125,7 @@ exports.protect = async(req, res,next) => {
     // GRANT ACCESS TO PROTECTED ROUTE
     
     req.user = currentUser
-   
-
+    res.locals.user = currentUser;
      next();
      
     }
@@ -130,6 +138,41 @@ exports.protect = async(req, res,next) => {
    }
 
 }
+
+// Only for rendered pages, no errors!
+exports.isLoggedIn = async (req, res, next) => {
+  
+    if (req.cookies.jwt) {
+            try{
+ // 1) verify token
+   const decoded = await promisify(jwt.verify)(
+    req.cookies.jwt,
+    process.env.JWT_SECRET_KEY
+    );
+
+  // 2) Check if user still exists
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
+    return next();
+  }
+
+  // 3) Check if user changed password after the token was issued
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    return next();
+  }
+
+  // THERE IS A LOGGED IN USER
+  res.locals.user = currentUser;
+  return next();
+            }
+            catch (err) {
+                // no logged in user
+                // console.log(err);
+                return next();
+            }
+    }
+    next();
+  };
 exports.restrictTo = (...roles) => {
    return  (req, res, next) => {
 
@@ -156,7 +199,7 @@ exports.forgotPassword = async (req, res, next) =>{
         // 3    Send it on user email 
       
         const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
-        const message =   `Forgot your password? Please send a PATCH request to ${resetURL} along with your new password and passwordConfirm \n. If you didn't forgot please ignore this email`;
+        const message =   `Forgot your password? Please send a PATCH request to ${resetURL} along with your new password and confirmPassword \n. If you didn't forgot please ignore this email`;
         
         sendEmail({
             email: user.email,
@@ -224,26 +267,28 @@ exports.updatePassword = async (req, res, next) => {
     try {
           // 1 Get user from the database
         //  currentUser taken from protected route
-
         const user = await User.findById(req.user._id).select('+password');
-        
     // 2 Check if posted password is correct
-
-          if( !(await user.verifyPassword(req.body.currentPassword , user.password))){
+            
+          if( ! (await user.verifyPassword(req.body.currentPassword ,user.password ))){
             return next(new AppError('Password is not correct', 401));
           }
+          if( req.body.newPassword !== req.body.confirmPassword){
+            return next(new AppError('Passwords dont matched', 401));
+          }
 
+        
           user.password = req.body.newPassword;
-          
           user.confirmPassword = req.body.confirmPassword;
-        await user.save();
+          await user.save();
 
     
     // // 4 Login and send JWT
-     createSendToken(user, 200, res);
+       createSendToken(user, 200, res);
     
     
     } catch (error) {
+        console.log(error);
        return next(new AppError('Error in updating password ', 500));
     }
 }

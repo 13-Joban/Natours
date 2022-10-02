@@ -30,8 +30,8 @@ mongoose.connect(DB, {  useUnifiedTopology: true})
      const importintoDB = async () => {
        try {
         await  Tour.create(tours)
-        await User.create(users, {validateBeforeSave: false})
-        await Review.create(reviews)
+        // await User.create(users, {validateBeforeSave: false})
+        // await Review.create(reviews)
 
         console.log('Data successfully loaded')
         
@@ -47,8 +47,8 @@ mongoose.connect(DB, {  useUnifiedTopology: true})
     const deleteDatafromDB = async () => {
         try{
             await Tour.deleteMany();
-            await User.deleteMany();
-            await Review.deleteMany();
+            // await User.deleteMany();
+            // await Review.deleteMany();
             console.log('Data successfully deleted');
            
         }

@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
     minlength: 8,
     select: false
   },
-  passwordConfirm: {
+  confirmPassword: {
     type: String,
     required: true
   },
@@ -48,8 +48,8 @@ userSchema.pre('save', async function(next) {
   // Hash the password with cost of 12
   this.password = await bcrypt.hash(this.password, 10);
 
-  // Delete passwordConfirm field
-  this.passwordConfirm = undefined;
+  // Delete confirmPassword field
+  this.confirmPassword = undefined;
   next();
 });
 
@@ -66,10 +66,13 @@ userSchema.pre(/^find/, function(next) {
   next();
 });
 
-userSchema.methods.verifyPassword = async (candiPass, userPass) => {
+userSchema.methods.verifyPassword = async function(
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
-  return await bcrypt.compare(candiPass, userPass);
-}
 
 userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
   if (this.passwordChangedAt) {
