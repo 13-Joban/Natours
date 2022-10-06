@@ -7,7 +7,7 @@ const handleCastErrorDB = err => {
 
 const handleDuplicateFieldsDB = err => {
   const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
-  console.log(value);
+  // console.log(value);
 
   const message = `Duplicate field value: ${value}. Please use another value!`;
   return new AppError(message, 400);
@@ -34,7 +34,7 @@ const sendErrorDev = (err, req, res) => {
   }
   else{
  // B) RENDERED WEBSITE
-  console.error('ERROR 💥', err);
+  // console.error('ERROR 💥', err);
  return res.status(err.statusCode).render('error', {
   title: 'Something went wrong',
   msg: err.message
@@ -54,7 +54,7 @@ const sendErrorProd = (err, req, res) => {
     }
     // B) Programming or other unknown error: don't leak error details
     // 1) Log error
-    console.error('ERROR 💥', err);
+    // console.error('ERROR 💥', err);
     // 2) Send generic message
     return res.status(500).json({
       status: 'error',
@@ -65,7 +65,7 @@ const sendErrorProd = (err, req, res) => {
   // B) RENDERED WEBSITE
   // A) Operational, trusted error: send message to client
   if (err.isOperational) {
-    console.log(err);
+    // console.log(err);
     return res.status(err.statusCode).render('error', {
       title: 'Something went wrong!',
       msg: err.message
@@ -73,7 +73,7 @@ const sendErrorProd = (err, req, res) => {
   }
   // B) Programming or other unknown error: don't leak error details
   // 1) Log error
-  console.error('ERROR 💥', err);
+  // console.error('ERROR 💥', err);
   // 2) Send generic message
   return res.status(err.statusCode).render('error', {
     title: 'Something went wrong!',

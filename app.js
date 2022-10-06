@@ -7,7 +7,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
-
+const compression = require('compression');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRouter');
@@ -27,10 +27,11 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 // Set security HTTP headers
 app.use(helmet());
 
+app.use(compression());
 // Development logging
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
+// if (process.env.NODE_ENV === 'development') {
+//   app.use(morgan('dev'));
+// }
 
 // Limit requests from same API
 const limiter = rateLimit({

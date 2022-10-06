@@ -65,7 +65,7 @@ exports.login = async(req, res, next) => {
         // 2 check if user exists in database
 
         const userindb = await User.findOne({email}).select('+password');
-        console.log(userindb);
+        // console.log(userindb);
         if(!userindb || ! await userindb.verifyPassword(password, userindb.password)){
             return next(new AppError('Email or password is incorrect', 401) );
         }
@@ -286,7 +286,7 @@ exports.updatePassword = async (req, res, next) => {
     
     
     } catch (error) {
-        console.log(error);
+        // console.log(error);
        return next(new AppError('Error in updating password ', 500));
     }
 }
