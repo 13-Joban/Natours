@@ -4,7 +4,7 @@
 const dotenv = require('dotenv');
 const fs = require('fs')
 
-dotenv.config({ path: './config.env' });
+dotenv.config({ path: './.env' });
 const mongoose = require('mongoose');
 const Tour = require("../../models/tourModel");
 const User = require('../../models/userModel');
@@ -16,7 +16,8 @@ mongoose.connect(DB, {  useUnifiedTopology: true})
     .then(( ) => {
         // console.log(connect.connections);
 
-        console.log('DB Connected successfully');
+        // console.log('DB Connected successfully');
+
     })
     .catch(err => console.log(err));
 
@@ -33,11 +34,11 @@ mongoose.connect(DB, {  useUnifiedTopology: true})
         // await User.create(users, {validateBeforeSave: false})
         // await Review.create(reviews)
 
-        console.log('Data successfully loaded')
+        // console.log('Data successfully loaded')
         
         }
         catch(error){
-            console.log(error);
+            // console.log(error);
         }
     
         process.exit();
@@ -49,11 +50,11 @@ mongoose.connect(DB, {  useUnifiedTopology: true})
             await Tour.deleteMany();
             // await User.deleteMany();
             // await Review.deleteMany();
-            console.log('Data successfully deleted');
+            // console.log('Data successfully deleted');
            
         }
         catch(error) {
-            console.log(error);
+            // console.log(error);
         }
         process.exit();
     }
@@ -65,4 +66,4 @@ mongoose.connect(DB, {  useUnifiedTopology: true})
         deleteDatafromDB()
     }
 
-console.log(process.argv)
+// console.log(process.argv)
