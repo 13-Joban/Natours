@@ -2,7 +2,7 @@ const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const AppError = require('../utils/AppError');
 const {promisify} = require('util');
-const sendEmail = require('../utils/email');
+const Email = require('../utils/email');
 const crypto  = require('crypto');
 
 
@@ -42,7 +42,9 @@ exports.signup = async (req, res) => {
             role: req.body.role,
             photo: req.body.photo
         });
-
+        const url = `${req.protocol}://${req.get('host')}/me`
+       
+       await  new Email(newUser, url ).sendWelcome()
         createSendToken(newUser, 201, res);
     } catch (error) {
         res.status(404).json({
@@ -199,14 +201,10 @@ exports.forgotPassword = async (req, res, next) =>{
         // 3    Send it on user email 
       
         const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
-        const message =   `Forgot your password? Please send a PATCH request to ${resetURL} along with your new password and confirmPassword \n. If you didn't forgot please ignore this email`;
-        
-        sendEmail({
-            email: user.email,
-            subject: 'Reset Token valid for 10 mins only',
-            message: message,
 
-        })
+        
+        await new Email(user, resetURL).sendPasswordReset();
+
        res.status(200).json({
             status: 'success',
            message: 'Token sent to email'

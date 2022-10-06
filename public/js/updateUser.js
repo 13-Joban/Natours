@@ -33,13 +33,16 @@ const updateSettings = async (data, type) => {
 // update User data
 const userDataform = document.querySelector('.form-user-data');
 if(userDataform){
-    userDataform.addEventListener('submit', e => {
-            e.preventDefault();
+  userDataform.addEventListener('submit', e => {
+    e.preventDefault();
+    const form = new FormData();
+    form.append('name', document.getElementById('name').value);
+    form.append('email', document.getElementById('email').value);
+    form.append('photo', document.getElementById('photo').files[0]);
+    console.log(form);
 
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            updateSettings({name, email}, 'data');
-    })
+    updateSettings(form, 'data');
+  });
 }
 
 // update Password
