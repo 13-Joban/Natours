@@ -2,17 +2,15 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable prettier/prettier */
 const dotenv = require('dotenv');
-const path = require('path');
 
+dotenv.config({ path: './.env' });
 const mongoose = require('mongoose');
 const app = require('./app');
 
-dotenv.config({ path: path.join(__dirname, '.env')})
 const port= process.env.PORT || 3000;
 const DB=process.env.DATABASE;
- 
 
-mongoose.connect(DB, {  useUnifiedTopology: true})
+mongoose.connect(DB)
     .then(( ) => {
         // console.log(connect.connections);
         console.log('DB Connected successfully');
