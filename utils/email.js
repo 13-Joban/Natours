@@ -1,5 +1,4 @@
 const nodemailer = require('nodemailer');
-const pug = require('pug');
 const htmlToText = require('html-to-text');
 const sgmail = require('@sendgrid/mail');
 // new Email(user, url).sendWelcom()
