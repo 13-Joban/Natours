@@ -1,7 +1,7 @@
 
 /* eslint-disable */
 
-const stripe = Stripe(process.env.STRIPE_PUBLIC_KEY);
+const stripe = Stripe('pk_test_51LpQ5SSAREguZ4UW1wKZrj4A5BwBkF3oE3i61NiEy7O9MfbboqDQWQL8Kvbd0qHZ5lHpyYni6qu0OvFPFNULjdEk00S2xENUug');
 
 
  const bookTour = async tourId => {
