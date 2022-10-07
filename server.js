@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 const app = require('./app');
 
 const port= process.env.PORT || 3000;
-const DB=process.env.DATABASE.replace('<password>', process.env.DATABASE_PASSWORD);
+const DB=process.env.DATABASE;
  
 mongoose.connect(DB, {  useUnifiedTopology: true})
     .then(( ) => {
