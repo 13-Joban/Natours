@@ -12,9 +12,7 @@ const port= process.env.PORT || 3000;
 
 mongoose
   .connect(process.env.DATABASE, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false
+    useNewUrlParser: true
   })
   .then(() => console.log('DB connection successful!'));
 
