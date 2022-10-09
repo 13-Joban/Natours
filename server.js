@@ -3,15 +3,15 @@
 /* eslint-disable prettier/prettier */
 const dotenv = require('dotenv');
 
-dotenv.config({ path: './.env' });
+dotenv.config({ path: './config.env' });
 const mongoose = require('mongoose');
 const app = require('./app');
 
 const port= process.env.PORT || 3000;
-// const DB=process.env.DATABASE;
+const DB=process.env.DATABASE;
 
 mongoose
-  .connect("mongodb+srv://joban:dlfnflN9485495LLNDFWwkldnd@cluster0.9ouvt.mongodb.net/natours?retryWrites=true&w=majority", {
+  .connect(DB, {
     useNewUrlParser: true
   })
   .then(() => console.log('DB connection successful!'));
