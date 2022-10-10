@@ -12,8 +12,8 @@ const updateSettings = async (data, type) => {
     try {
       const url =
         type === 'password'
-          ? '/api/v1/users/updateMyPassword'
-          : '/api/v1/users/updateMe';
+          ? 'https://hidden-fortress-89648.herokuapp.com/api/v1/users/updateMyPassword'
+          : 'https://hidden-fortress-89648.herokuapp.com/api/v1/users/updateMe';
   
       const res = await axios({
         method: 'PATCH',

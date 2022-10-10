@@ -3,7 +3,7 @@
   try {
     const res = await  axios({
       method: 'POST',
-      url: '/api/v1/users/login',
+      url: 'https://hidden-fortress-89648.herokuapp.com/api/v1/users/login',
       data: {email, password}
     })
     if(res.data.status === 'success') {
@@ -42,7 +42,7 @@ const logout = async () => {
   try {
     const res = await   axios({
       method: 'GET',
-      url: '/api/v1/users/logout'
+      url: 'https://hidden-fortress-89648.herokuapp.com/api/v1/users/logout'
     })
     if(res.data.status === 'success') {
     location.reload(true);
