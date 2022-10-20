@@ -9,7 +9,7 @@ const app = require('./app');
 
 const port= process.env.PORT || 3000;
 // const DB=process.env.DATABASE;
-
+console.log(process.env.DATABASE)
 mongoose
   .connect(process.env.DATABASE, {
     useNewUrlParser: true
