@@ -8,10 +8,10 @@ const mongoose = require('mongoose');
 const app = require('./app');
 
 const port= process.env.PORT || 3000;
-const DB=process.env.DATABASE;
+// const DB=process.env.DATABASE;
 
 mongoose
-  .connect(DB, {
+  .connect(process.env.DATABASE, {
     useNewUrlParser: true
   })
   .then(() => console.log('DB connection successful!'));
