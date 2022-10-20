@@ -8,7 +8,7 @@ const stripe = Stripe('pk_test_51LpQ5SSAREguZ4UW1wKZrj4A5BwBkF3oE3i61NiEy7O9Mfbb
   try {
     // 1) Get checkout session from API
     const session = await axios(
-      `https://hidden-fortress-89648.herokuapp.com/api/v1/bookings/checkout-session/${tourId}`
+      `http://127.0.0.1:3000/api/v1/bookings/checkout-session/${tourId}`
     );
     // console.log(session);
 
