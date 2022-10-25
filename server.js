@@ -10,7 +10,7 @@ const app = require('./app');
 const port= process.env.PORT || 3000;
 const DB=process.env.DATABASE;
 
-mongoose.connect(DB, {useNewUrlParser: true});
+mongoose.connect("mongodb+srv://joban:dlfnflN9485495LLNDFWwkldnd@cluster0.9ouvt.mongodb.net/natours?retryWrites=true&w=majority", {useNewUrlParser: true});
 mongoose.connection.once("open" , ()  => console.log('DB connected'));
 
 
